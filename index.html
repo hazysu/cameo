@@ -5,25 +5,42 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;800&display=swap" rel="stylesheet"> 
 	<title>cameo browser</title>
 	<meta name="title" content="Cameo Browser - View public Cameo clips">
 	<meta name="description" content="Browse public Cameo clips from a given username">
 	<style>body {
-font-family: sans-serif;
-}	
+margin-top: 20px;
+margin-bottom: 20px;
+background: black;
+color: white;
+font-family: 'Lexend', sans-serif;
+}
 .title {
 font-size: 40px;
 margin: 0px;
 margin-bottom: 10px;
+text-align: center;
+}
+form {
+width: --moz-fit-content;
+width: fit-content;
+margin: 0 auto;
 }
 #video-list {
-margin: 0 -8px;
+padding: 10px 0px;
+margin: 20px -8px;
+overflow: hidden;
+background: #0d0d0d;
 }
 .vidBox {
 width: 207px;
 height: 368px;
 margin: 4px 8px;
 float: left;
+border-radius: 4px;
 }
 #fake-vidBox {
 background: black;
@@ -34,13 +51,17 @@ font-size:30px;
 }
 #fake-vidBox[onClick] {
 cursor: pointer;
+}
+input {
+border-radius: 4px;
+border: 1px solid black
 }</style>
 </head>
 <body>
 	<p class="title">Cameo Browser</p>
 	<form action="">
 		<label for="username">Enter a Cameo username:</label>
-		<input type="text" name="username">
+		<input type="text" name="username" id="username-input" placeholder="gilbertgottfried">
 	</form> 
 	<div id="video-list"></div>
 </body>
@@ -48,6 +69,9 @@ cursor: pointer;
 	const urlParams = new URLSearchParams(window.location.search)
 	var lastVideo = ''
 	var username = urlParams.get('username') || 'gilbertgottfried'
+	if (urlParams.get('username')) {
+		document.getElementById('username-input').value = username
+	}
 	const getNext = async () => {
 		let videoList = document.getElementById('video-list')
 		let extraQuery = (lastVideo) ? `?page=${lastVideo}&pageSize=8` : `?pageSize=8`
