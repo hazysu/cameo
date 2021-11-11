@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<title>cameo browser</title>
+	<style>body {
+font-family: sans-serif;
+}	
+.title {
+font-size: 40px;
+margin: 0px;
+margin-bottom: 10px;
+}
+#video-list {
+margin: 0 -8px;
+}
+.vidBox {
+width: 207px;
+height: 368px;
+margin: 4px 8px;
+float: left;
+}
+#fake-vidBox {
+background: black;
+color: white;
+font-weight: bold;
+text-align: center;
+font-size:30px;
+}
+#fake-vidBox[onClick] {
+cursor: pointer;
+}</style>
+</head>
+<body>
+	<p class="title">Cameo Browser</p>
+	<form action="">
+		<label for="username">Enter a Cameo username:</label>
+		<input type="text" name="username">
+	</form> 
+	<div id="video-list"></div>
+</body>
+<script>
+	const urlParams = new URLSearchParams(window.location.search)
+	var lastVideo = ''
+	var username = urlParams.get('username') || 'gilbertgottfried'
+	const getNext = async () => {
+		let videoList = document.getElementById('video-list')
+		let extraQuery = (lastVideo) ? `?page=${lastVideo}&pageSize=8` : `?pageSize=8`
+		let topVideos
+		try {
+			topVideos = (await axios.get(`https://www.cameo.com/api/order/list/${username}/latest${extraQuery}`)).data
+		} catch (error) {
+			let endBlock = document.createElement('div')
+			endBlock.innerHTML = `<p>This username does not exist.</p>`
+			endBlock.setAttribute('class', 'vidBox')
+			endBlock.setAttribute('id', 'fake-vidBox')
+			videoList.appendChild(endBlock)
+		}
+		lastVideo = topVideos.nextPageStart
+		topVideos = topVideos.orders
+		console.log(topVideos)
+		let fakeVidBox = document.getElementById('fake-vidBox')
+		if (fakeVidBox) fakeVidBox.remove()
+		for (let i = 0; i < topVideos.length; i ++) {
+			let newVideo = document.createElement('video')
+			newVideo.setAttribute('poster', topVideos[i].nakedThumbnailUrl)
+			newVideo.setAttribute('src', topVideos[i].nakedMediaUrl)
+			newVideo.setAttribute('controls', '')
+			newVideo.setAttribute('class', 'vidBox')
+			videoList.appendChild(newVideo)
+		}
+		let endBlock = document.createElement('div')
+		endBlock.setAttribute('onclick', 'getNext()')
+		endBlock.innerHTML = `<p>Click here to load more</p>`
+		endBlock.setAttribute('class', 'vidBox')
+		endBlock.setAttribute('id', 'fake-vidBox')
+		videoList.appendChild(endBlock)
+	}
+	getNext()
+</script>
+</html>
